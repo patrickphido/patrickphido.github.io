@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Patrick Do — Software Engineer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper: #F7F7F4;
+    --paper-raised: #FFFFFF;
+    --ink: #14181C;
+    --ink-soft: #3A4149;
+    --muted: #7A8494;
+    --accent: #2454A6;
+    --accent-soft: #E7EEF7;
+    --line: #DFE3E8;
+    --tag-bg: #EEF1F4;
+    --max-w: 880px;
+  }
+
+  *{ box-sizing: border-box; margin:0; padding:0; }
+
+  html{ scroll-behavior: smooth; }
+
+  @media (prefers-reduced-motion: reduce){
+    html{ scroll-behavior: auto; }
+    *{ animation: none !important; transition: none !important; }
+    .reveal{ opacity: 1 !important; transform: none !important; }
+  }
+
+  @keyframes rise{
+    from{ opacity: 0; transform: translateY(14px); }
+    to{ opacity: 1; transform: translateY(0); }
+  }
+
+  /* hero load-in: staggered by inline --d delay var */
+  .hero-anim{
+    opacity: 0;
+    animation: rise 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation-delay: var(--d, 0s);
+  }
+
+  /* generic scroll-reveal, toggled via JS IntersectionObserver */
+  .reveal{
+    opacity: 0;
+    transform: translateY(18px);
+    transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .reveal.is-visible{
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .log-entry.reveal{ transition-delay: 0.05s; }
+  .log-entry.reveal::before{
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) 0.25s;
+    transform: scale(0);
+  }
+  .log-entry.reveal.is-visible::before{ transform: scale(1); }
+
+  body{
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Inter', sans-serif;
+    line-height: 1.55;
+    background-image:
+      linear-gradient(var(--line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line) 1px, transparent 1px);
+    background-size: 48px 48px;
+    background-position: -1px -1px;
+    background-attachment: fixed;
+  }
+
+  a{ color: inherit; text-decoration: none; }
+
+  .eyebrow{
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    letter-spacing: 0.03em;
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+  }
+  .eyebrow::before{ content: "//"; color: var(--muted); }
+
+  h1, h2, h3{
+    font-family: 'Space Grotesk', sans-serif;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+  }
+
+  .wrap{
+    max-width: var(--max-w);
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  /* NAV */
+  header.nav{
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    backdrop-filter: blur(8px);
+    background: rgba(247,247,244,0.85);
+    border-bottom: 1px solid var(--line);
+  }
+  .nav-inner{
+    max-width: var(--max-w);
+    margin: 0 auto;
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .nav-logo{
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 600;
+    font-size: 0.95rem;
+    border: 1px solid var(--ink);
+    padding: 2px 8px;
+    border-radius: 3px;
+  }
+  .nav-links{
+    display: flex;
+    gap: 28px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    color: var(--ink-soft);
+  }
+  .nav-links a{ position: relative; }
+  .nav-links a:hover{ color: var(--accent); }
+  .nav-links a::after{
+    content: "";
+    position: absolute;
+    left: 0; bottom: -4px;
+    width: 0; height: 1px;
+    background: var(--accent);
+    transition: width 0.2s ease;
+  }
+  .nav-links a:hover::after{ width: 100%; }
+
+  @media (max-width: 640px){
+    .nav-links{ display: none; }
+  }
+
+  /* HERO */
+  .hero{
+    padding: 96px 0 72px;
+  }
+  .hero .eyebrow{ margin-bottom: 18px; }
+  .hero h1{
+    font-size: clamp(2.6rem, 6vw, 4.2rem);
+    font-weight: 700;
+    line-height: 1.02;
+    margin-bottom: 18px;
+  }
+  .hero .tagline{
+    font-size: 1.15rem;
+    color: var(--ink-soft);
+    max-width: 560px;
+    margin-bottom: 34px;
+  }
+  .hero .tagline strong{
+    color: var(--ink);
+    font-weight: 600;
+  }
+
+  .cta-row{
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 40px;
+  }
+  .btn{
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.82rem;
+    padding: 12px 20px;
+    border-radius: 4px;
+    border: 1px solid var(--ink);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: background 0.15s ease, color 0.15s ease, transform 0.15s ease;
+  }
+  .btn-primary{
+    background: var(--ink);
+    color: var(--paper);
+  }
+  .btn-primary:hover{ background: var(--accent); border-color: var(--accent); transform: translateY(-1px); }
+  .btn-ghost:hover{ background: var(--ink); color: var(--paper); transform: translateY(-1px); }
+
+  .social-row{
+    display: flex;
+    gap: 20px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    color: var(--muted);
+  }
+  .social-row a{ border-bottom: 1px solid transparent; padding-bottom: 2px; }
+  .social-row a:hover{ color: var(--accent); border-color: var(--accent); }
+
+  /* SECTION SHELL */
+  section{ padding: 64px 0; border-top: 1px solid var(--line); }
+  .section-head{ margin-bottom: 40px; }
+  .section-head h2{
+    font-size: 1.7rem;
+    margin-top: 8px;
+  }
+
+  /* LOG (experience + projects timeline) */
+  .log{
+    position: relative;
+    padding-left: 28px;
+  }
+  .log::before{
+    content: "";
+    position: absolute;
+    left: 4px; top: 6px; bottom: 6px;
+    width: 1px;
+    background: var(--line);
+  }
+  .log-entry{
+    position: relative;
+    padding-bottom: 48px;
+  }
+  .log-entry:last-child{ padding-bottom: 0; }
+  .log-entry::before{
+    content: "";
+    position: absolute;
+    left: -28px; top: 6px;
+    width: 9px; height: 9px;
+    border-radius: 50%;
+    background: var(--paper);
+    border: 2px solid var(--accent);
+  }
+  .log-date{
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--muted);
+    margin-bottom: 6px;
+    display: block;
+  }
+  .log-title{
+    font-size: 1.15rem;
+    font-weight: 600;
+    margin-bottom: 2px;
+  }
+  .log-role{
+    font-size: 0.9rem;
+    color: var(--accent);
+    font-weight: 500;
+    margin-bottom: 14px;
+    display: block;
+  }
+  .log-entry ul{
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+  .log-entry li{
+    font-size: 0.95rem;
+    color: var(--ink-soft);
+    padding-left: 16px;
+    position: relative;
+  }
+  .log-entry li::before{
+    content: "–";
+    position: absolute;
+    left: 0;
+    color: var(--muted);
+  }
+  .tags{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .tag{
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    background: var(--tag-bg);
+    color: var(--ink-soft);
+    padding: 4px 10px;
+    border-radius: 3px;
+    border: 1px solid var(--line);
+    transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+  }
+  .tag:hover{
+    background: var(--accent-soft);
+    border-color: var(--accent);
+    color: var(--accent);
+    transform: translateY(-1px);
+  }
+
+  /* SKILLS */
+  .skills-grid{
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 28px;
+  }
+  .skill-group .eyebrow{ margin-bottom: 12px; }
+  .skill-group .tags{ gap: 8px; }
+
+  /* EDUCATION */
+  .edu-card{
+    background: var(--paper-raised);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 28px;
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+  }
+  .edu-card:hover{
+    box-shadow: 0 8px 24px -12px rgba(20,24,28,0.15);
+    transform: translateY(-2px);
+  }
+  .edu-card h3{ font-size: 1.15rem; margin-bottom: 4px; }
+  .edu-card .edu-sub{
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    color: var(--muted);
+    margin-bottom: 16px;
+    display: block;
+  }
+  .edu-card p{ font-size: 0.9rem; color: var(--ink-soft); }
+  .edu-card p strong{ color: var(--ink); font-weight: 600; }
+
+  /* LEADERSHIP small note */
+  .leadership{
+    margin-top: 28px;
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+    border-left: 2px solid var(--accent);
+    padding-left: 16px;
+  }
+  .leadership strong{ color: var(--ink); }
+
+  /* CONTACT / FOOTER */
+  footer{
+    padding: 72px 0 48px;
+    border-top: 1px solid var(--line);
+  }
+  footer h2{
+    font-size: 2rem;
+    margin-bottom: 14px;
+  }
+  footer p{
+    color: var(--ink-soft);
+    max-width: 480px;
+    margin-bottom: 32px;
+  }
+  .foot-bottom{
+    margin-top: 56px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    color: var(--muted);
+  }
+  .foot-bottom a:hover{ color: var(--accent); }
+
+  ::selection{ background: var(--accent-soft); color: var(--accent); }
+
+  a:focus-visible, button:focus-visible{
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="nav-inner">
+    <div class="nav-logo">PD</div>
+    <nav class="nav-links">
+      <a href="#work">Work</a>
+      <a href="#skills">Skills</a>
+      <a href="#education">Education</a>
+      <a href="#contact">Contact</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <section class="hero" style="border-top:none;">
+    <p class="eyebrow hero-anim" style="--d:0s">B.S. COMPUTER SCIENCE, UNIVERSITY OF HOUSTON</p>
+    <h1 class="hero-anim" style="--d:0.08s">Patrick Do</h1>
+    <p class="tagline hero-anim" style="--d:0.16s">I build <strong>structured systems</strong> — backend APIs, role-based dashboards, and the data pipelines that keep them accurate. Most recently shipping analytics tooling in C# / .NET.</p>
+    <div class="cta-row hero-anim" style="--d:0.24s">
+      <a class="btn btn-primary" href="patrick-do-resume.pdf" download>↓ Download résumé</a>
+      <a class="btn btn-ghost" href="mailto:patrickphido@gmail.com">Email me</a>
+    </div>
+    <div class="social-row hero-anim" style="--d:0.32s">
+      <a href="https://www.linkedin.com/in/patrick-phi-do" target="_blank" rel="noopener">LinkedIn</a>
+      <a href="https://patrickphido.github.io/patrickphido/" target="_blank" rel="noopener">GitHub Pages</a>
+      <a href="mailto:patrickphido@gmail.com">patrickphido@gmail.com</a>
+    </div>
+  </section>
+
+  <section id="work">
+    <div class="section-head reveal">
+      <p class="eyebrow">experience log</p>
+      <h2>Where the code has shipped</h2>
+    </div>
+
+    <div class="log">
+
+      <div class="log-entry reveal">
+        <span class="log-date">JAN 2026 — MAY 2026</span>
+        <h3 class="log-title">Octane</h3>
+        <span class="log-role">Performance Analytics & Dashboard Platform · Personal Project</span>
+        <ul>
+          <li>Building a mobile-first analytics platform that turns sales and marketing data into real-time dashboards, with a layered backend API in C# and .NET 9 using dependency injection.</li>
+          <li>Designed back-end services and REST endpoints with Entity Framework Core to compute sales performance metrics.</li>
+          <li>Built role-based dashboards for reps, managers, and executives, giving each level the right view of performance.</li>
+          <li>Added automated unit tests with NUnit and enforced coverage with SonarCloud CI pipelines to keep the codebase reliable.</li>
+          <li>Wired up Swagger UI for API documentation and interactive endpoint testing during development.</li>
+        </ul>
+        <div class="tags">
+          <span class="tag">C#</span><span class="tag">.NET 9</span><span class="tag">Entity Framework Core</span>
+          <span class="tag">REST API</span><span class="tag">NUnit</span><span class="tag">SonarCloud</span><span class="tag">Swagger</span>
+        </div>
+      </div>
+
+      <div class="log-entry reveal">
+        <span class="log-date">JAN 2025 — MAY 2025</span>
+        <h3 class="log-title">Approval Workflow System</h3>
+        <span class="log-role">Internal Application · University of Houston</span>
+        <ul>
+          <li>Built a secure form-approval platform for University of Houston staff, authenticating through Microsoft OAuth via Cougar ID.</li>
+          <li>Built administrative dashboards for managing approvers, delegations, and submission workflows.</li>
+          <li>Added real-time reporting with filtering by unit, status, and date to give admins clearer visibility.</li>
+        </ul>
+        <div class="tags">
+          <span class="tag">Microsoft OAuth</span><span class="tag">Admin Dashboards</span><span class="tag">Reporting</span>
+        </div>
+      </div>
+
+      <div class="log-entry reveal">
+        <span class="log-date">MAY 2023 — JUL 2024</span>
+        <h3 class="log-title">Moore Control Systems Inc.</h3>
+        <span class="log-role">IT Intern · Houston, TX</span>
+        <ul>
+          <li>Validated PLC system behavior during Factory Acceptance Testing by running test procedures against technical specs.</li>
+          <li>Designed and maintained structured SQL databases supporting internal engineering workflows.</li>
+          <li>Developed internal HTML/CSS web pages to support documentation and operational tooling for engineering teams.</li>
+          <li>Migrated large datasets from legacy systems into M-Files, preserving audit trails and improving document accessibility.</li>
+        </ul>
+        <div class="tags">
+          <span class="tag">SQL</span><span class="tag">HTML/CSS</span><span class="tag">M-Files</span><span class="tag">PLC Testing</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <section id="skills">
+    <div class="section-head reveal">
+      <p class="eyebrow">stack</p>
+      <h2>Tools & languages</h2>
+    </div>
+    <div class="skills-grid">
+      <div class="skill-group reveal">
+        <p class="eyebrow">languages</p>
+        <div class="tags">
+          <span class="tag">C#</span><span class="tag">Python</span><span class="tag">JavaScript</span>
+          <span class="tag">TypeScript</span><span class="tag">SQL</span><span class="tag">C++</span>
+          <span class="tag">HTML/CSS</span><span class="tag">R</span>
+        </div>
+      </div>
+      <div class="skill-group reveal">
+        <p class="eyebrow">fullstack</p>
+        <div class="tags">
+          <span class="tag">React</span><span class="tag">Next.js</span><span class="tag">.NET</span>
+          <span class="tag">Entity Framework Core</span><span class="tag">REST APIs</span>
+        </div>
+      </div>
+      <div class="skill-group reveal">
+        <p class="eyebrow">dev tools & platforms</p>
+        <div class="tags">
+          <span class="tag">VS Code</span><span class="tag">Visual Studio</span><span class="tag">Azure</span>
+          <span class="tag">JetBrains Rider</span><span class="tag">SonarCloud</span><span class="tag">Swagger UI</span>
+          <span class="tag">NUnit</span><span class="tag">Git</span>
+        </div>
+      </div>
+      <div class="skill-group reveal">
+        <p class="eyebrow">documentation</p>
+        <div class="tags">
+          <span class="tag">M-Files</span><span class="tag">LaTeX</span><span class="tag">Confluence</span>
+          <span class="tag">Jira</span><span class="tag">Excel</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="education">
+    <div class="section-head reveal">
+      <p class="eyebrow">background</p>
+      <h2>Education</h2>
+    </div>
+    <div class="edu-card reveal">
+      <h3>University of Houston</h3>
+      <span class="edu-sub">B.S. in Computer Science</span>
+      <p><strong>Relevant coursework:</strong> Data Structures & Algorithms, Operating Systems, Software Design, Database Systems, Fundamentals of Software Engineering, Software Development Practices, Artificial Intelligence</p>
+    </div>
+    <div class="leadership reveal">
+      <strong>Houston Gamma Beta Fraternity</strong> — Active member since May 2022, participating in professional networking, technology discussions, and community service initiatives.
+    </div>
+  </section>
+
+  <footer id="contact">
+    <p class="eyebrow reveal">get in touch</p>
+    <h2 class="reveal">Let's build something.</h2>
+    <p class="reveal">Open to new-grad software engineering roles — backend, fullstack, or systems-leaning. The fastest way to reach me is email.</p>
+    <div class="cta-row reveal">
+      <a class="btn btn-primary" href="mailto:patrickphido@gmail.com">Email me</a>
+      <a class="btn btn-ghost" href="https://www.linkedin.com/in/patrick-phi-do" target="_blank" rel="noopener">Connect on LinkedIn</a>
+    </div>
+    <div class="foot-bottom">
+      <span>Patrick Do — Houston, TX</span>
+      <a href="#" onclick="window.scrollTo({top:0,behavior:'smooth'});return false;">↑ Back to top</a>
+    </div>
+  </footer>
+
+</main>
+
+<script>
+  var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var revealEls = document.querySelectorAll('.reveal');
+
+  if (prefersReduced || !('IntersectionObserver' in window)) {
+    revealEls.forEach(function(el){ el.classList.add('is-visible'); });
+  } else {
+    var observer = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+
+    revealEls.forEach(function(el){ observer.observe(el); });
+  }
+</script>
+
+</body>
+</html>
