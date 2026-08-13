@@ -367,6 +367,15 @@
   }
   .foot-bottom a:hover{ color: var(--accent); }
 
+  .copied-toast{
+    font-size: 0.7rem;
+    color: var(--accent);
+    margin-left: 8px;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
+  .copied-toast.show{ opacity: 1; }
+
   ::selection{ background: var(--accent-soft); color: var(--accent); }
 
   a:focus-visible, button:focus-visible{
@@ -397,7 +406,7 @@
     <p class="tagline hero-anim" style="--d:0.16s">I build <strong>structured systems</strong> — backend APIs, role-based dashboards, and the data pipelines that keep them accurate. Most recently shipping analytics tooling in C# / .NET.</p>
     <div class="cta-row hero-anim" style="--d:0.24s">
       <a class="btn btn-primary" href="patrick-do-resume.pdf" download>↓ Download résumé</a>
-      <a class="btn btn-ghost" href="mailto:patrickphido@gmail.com">Email me</a>
+      <a class="btn btn-ghost" href="mailto:patrickphido@gmail.com" onclick="copyEmail(this)">Email me<span class="copied-toast">Copied!</span></a>
     </div>
     <div class="social-row hero-anim" style="--d:0.32s">
       <a href="https://www.linkedin.com/in/patrick-phi-do" target="_blank" rel="noopener">LinkedIn</a>
@@ -522,7 +531,7 @@
     <h2 class="reveal">Let's build something.</h2>
     <p class="reveal">Open to new-grad software engineering roles — backend, fullstack, or systems-leaning. The fastest way to reach me is email.</p>
     <div class="cta-row reveal">
-      <a class="btn btn-primary" href="mailto:patrickphido@gmail.com">Email me</a>
+      <a class="btn btn-primary" href="mailto:patrickphido@gmail.com" onclick="copyEmail(this)">Email me<span class="copied-toast">Copied!</span></a>
       <a class="btn btn-ghost" href="https://www.linkedin.com/in/patrick-phi-do" target="_blank" rel="noopener">Connect on LinkedIn</a>
     </div>
     <div class="foot-bottom">
@@ -534,6 +543,18 @@
 </main>
 
 <script>
+  function copyEmail(el){
+    var email = 'patrickphido@gmail.com';
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(email).catch(function(){});
+    }
+    var toast = el.querySelector('.copied-toast');
+    if (toast) {
+      toast.classList.add('show');
+      setTimeout(function(){ toast.classList.remove('show'); }, 2000);
+    }
+  }
+
   var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var revealEls = document.querySelectorAll('.reveal');
 
