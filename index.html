@@ -4,6 +4,20 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Patrick Do — Software Engineer</title>
+<meta name="description" content="Patrick Do — Computer Science graduate building backend APIs, dashboards, and data pipelines in C#/.NET.">
+
+<link rel="icon" type="image/png" href="favicon.png">
+
+<meta property="og:type" content="website">
+<meta property="og:title" content="Patrick Do — Software Engineer">
+<meta property="og:description" content="Computer Science graduate building backend APIs, dashboards, and data pipelines in C#/.NET.">
+<meta property="og:image" content="https://patrickphido.github.io/social-preview.png">
+<meta property="og:url" content="https://patrickphido.github.io">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Patrick Do — Software Engineer">
+<meta name="twitter:description" content="Computer Science graduate building backend APIs, dashboards, and data pipelines in C#/.NET.">
+<meta name="twitter:image" content="https://patrickphido.github.io/social-preview.png">
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -19,6 +33,10 @@
     --line: #DFE3E8;
     --tag-bg: #EEF1F4;
     --max-w: 880px;
+    --violet: #7C3AED;
+    --coral: #E85D3E;
+    --teal: #0F9488;
+    --gold: #D69E2E;
   }
 
   *{ box-sizing: border-box; margin:0; padding:0; }
@@ -105,8 +123,22 @@
     top: 0;
     z-index: 20;
     backdrop-filter: blur(8px);
-    background: rgba(247,247,244,0.85);
-    border-bottom: 1px solid var(--line);
+    background: rgba(247,247,244,0.7);
+    border-bottom: 1px solid transparent;
+    transition: background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+  }
+  header.nav.scrolled{
+    background: rgba(247,247,244,0.92);
+    border-bottom-color: var(--line);
+    box-shadow: 0 4px 24px -16px rgba(20,24,28,0.15);
+  }
+  .scroll-progress{
+    position: absolute;
+    left: 0; bottom: -1px;
+    height: 2px;
+    width: 0%;
+    background: linear-gradient(90deg, var(--accent), var(--violet), var(--coral), var(--teal));
+    transition: width 0.1s linear;
   }
   .nav-inner{
     max-width: var(--max-w);
@@ -115,7 +147,9 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+    transition: padding 0.3s ease;
   }
+  header.nav.scrolled .nav-inner{ padding: 11px 24px; }
   .nav-logo{
     font-family: 'JetBrains Mono', monospace;
     font-weight: 600;
@@ -132,7 +166,7 @@
     color: var(--ink-soft);
   }
   .nav-links a{ position: relative; }
-  .nav-links a:hover{ color: var(--accent); }
+  .nav-links a:hover, .nav-links a.active{ color: var(--accent); }
   .nav-links a::after{
     content: "";
     position: absolute;
@@ -141,15 +175,117 @@
     background: var(--accent);
     transition: width 0.2s ease;
   }
-  .nav-links a:hover::after{ width: 100%; }
+  .nav-links a:hover::after, .nav-links a.active::after{ width: 100%; }
+
+  .nav-toggle{
+    display: none;
+    flex-direction: column;
+    gap: 5px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+  }
+  .nav-toggle span{
+    width: 22px;
+    height: 2px;
+    background: var(--ink);
+    transition: transform 0.25s ease, opacity 0.25s ease;
+  }
+  .nav-toggle.open span:nth-child(1){ transform: translateY(7px) rotate(45deg); }
+  .nav-toggle.open span:nth-child(2){ opacity: 0; }
+  .nav-toggle.open span:nth-child(3){ transform: translateY(-7px) rotate(-45deg); }
 
   @media (max-width: 640px){
-    .nav-links{ display: none; }
+    .nav-links{
+      display: flex;
+      flex-direction: column;
+      position: absolute;
+      top: 100%; left: 0; right: 0;
+      background: var(--paper);
+      border-bottom: 1px solid var(--line);
+      padding: 8px 24px 20px;
+      gap: 16px;
+      font-size: 0.95rem;
+      max-height: 0;
+      overflow: hidden;
+      opacity: 0;
+      transition: max-height 0.3s ease, opacity 0.25s ease;
+    }
+    .nav-links.open{ max-height: 260px; opacity: 1; }
+    .nav-toggle{ display: flex; }
   }
 
   /* HERO */
   .hero{
     padding: 96px 0 72px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero-blobs{
+    position: absolute;
+    inset: -20% -10%;
+    z-index: 0;
+    pointer-events: none;
+  }
+  .blob{
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(60px);
+    opacity: 0.22;
+    animation: drift 16s ease-in-out infinite alternate;
+  }
+  .blob-1{ width: 280px; height: 280px; top: 0; left: 8%; background: var(--violet); animation-delay: 0s; }
+  .blob-2{ width: 240px; height: 240px; top: 30%; right: 4%; background: var(--coral); animation-delay: -5s; }
+  .blob-3{ width: 220px; height: 220px; bottom: -10%; left: 30%; background: var(--teal); animation-delay: -10s; }
+  @keyframes drift{
+    from{ transform: translate(0,0) scale(1); }
+    to{ transform: translate(30px,-20px) scale(1.15); }
+  }
+  .hero-spotlight{
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background: radial-gradient(360px circle at var(--mx,50%) var(--my,20%), var(--accent-soft), transparent 70%);
+    opacity: 0.6;
+    transition: background 0.1s ease;
+  }
+  #hero-content{
+    position: relative;
+    z-index: 1;
+    will-change: transform, opacity;
+    display: flex;
+    align-items: center;
+    gap: 48px;
+  }
+  .hero-text{ flex: 1; min-width: 0; }
+  .hero-photo-wrap{
+    flex: 0 0 auto;
+    position: relative;
+  }
+  .hero-photo-frame{
+    width: 220px;
+    height: 275px;
+    border-radius: 16px;
+    overflow: hidden;
+    position: relative;
+    background: linear-gradient(155deg, var(--accent), var(--violet) 50%, var(--teal));
+    padding: 3px;
+    box-shadow: 0 20px 44px -20px rgba(20,24,28,0.35);
+    will-change: transform;
+    transition: transform 0.15s ease;
+  }
+  .hero-photo-frame img{
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 14px;
+  }
+  @media (max-width: 720px){
+    #hero-content{ flex-direction: column-reverse; align-items: flex-start; gap: 28px; }
+    .hero-photo-frame{ width: 140px; height: 175px; }
   }
   .hero .eyebrow{ margin-bottom: 18px; }
   .hero h1{
@@ -157,6 +293,16 @@
     font-weight: 700;
     line-height: 1.02;
     margin-bottom: 18px;
+    background: linear-gradient(100deg, var(--ink) 30%, var(--accent) 65%, var(--violet) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    background-size: 200% auto;
+    animation: shimmer 6s ease-in-out infinite alternate;
+  }
+  @keyframes shimmer{
+    from{ background-position: 0% center; }
+    to{ background-position: 100% center; }
   }
   .hero .tagline{
     font-size: 1.15rem;
@@ -201,15 +347,46 @@
     font-size: 0.8rem;
     color: var(--muted);
   }
-  .social-row a{ border-bottom: 1px solid transparent; padding-bottom: 2px; }
+  .social-row a{
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    border-bottom: 1px solid transparent;
+    padding-bottom: 2px;
+  }
+  .social-row a svg{ width: 15px; height: 15px; fill: currentColor; }
   .social-row a:hover{ color: var(--accent); border-color: var(--accent); }
 
   /* SECTION SHELL */
   section{ padding: 64px 0; border-top: 1px solid var(--line); }
+  #work{ border-top-color: color-mix(in srgb, var(--violet) 35%, var(--line)); }
+  #skills{ border-top-color: color-mix(in srgb, var(--teal) 35%, var(--line)); }
+  #education{ border-top-color: color-mix(in srgb, var(--gold) 35%, var(--line)); }
+  footer{ border-top-color: color-mix(in srgb, var(--accent) 35%, var(--line)); }
+  #work .eyebrow{ color: var(--violet); }
+  #skills .eyebrow{ color: var(--teal); }
+  #education .eyebrow{ color: var(--gold); }
   .section-head{ margin-bottom: 40px; }
   .section-head h2{
     font-size: 1.7rem;
     margin-top: 8px;
+  }
+  .reveal h2, h2.reveal{
+    transform: translateY(18px) scale(0.96);
+  }
+  .reveal.is-visible h2, h2.reveal.is-visible{
+    transform: translateY(0) scale(1);
+  }
+
+  @media (min-width: 900px){
+    #work{ display: flex; gap: 56px; align-items: flex-start; }
+    #work .section-head{
+      position: sticky;
+      top: 110px;
+      flex: 0 0 220px;
+      margin-bottom: 0;
+    }
+    #work .log{ flex: 1; min-width: 0; }
   }
 
   /* LOG (experience + projects timeline) */
@@ -222,11 +399,14 @@
     position: absolute;
     left: 4px; top: 6px; bottom: 6px;
     width: 1px;
-    background: var(--line);
+    background: linear-gradient(var(--violet), var(--coral), var(--teal));
+    opacity: 0.5;
   }
   .log-entry{
     position: relative;
     padding-bottom: 48px;
+    transition: opacity 0.3s ease, filter 0.3s ease, background 0.3s ease, box-shadow 0.3s ease, padding 0.3s ease, margin 0.3s ease;
+    border-radius: 10px;
   }
   .log-entry:last-child{ padding-bottom: 0; }
   .log-entry::before{
@@ -236,7 +416,14 @@
     width: 9px; height: 9px;
     border-radius: 50%;
     background: var(--paper);
-    border: 2px solid var(--accent);
+    border: 2px solid var(--dot, var(--accent));
+  }
+  .log-entry.dimmed{ opacity: 0.3; filter: grayscale(0.4); }
+  .log-entry.highlighted{
+    background: var(--paper-raised);
+    box-shadow: 0 0 0 2px var(--dot, var(--accent)), 0 12px 28px -18px rgba(20,24,28,0.25);
+    padding: 16px 16px 48px 16px;
+    margin: -16px -16px 0 -16px;
   }
   .log-date{
     font-family: 'JetBrains Mono', monospace;
@@ -252,10 +439,29 @@
   }
   .log-role{
     font-size: 0.9rem;
-    color: var(--accent);
+    color: var(--dot, var(--accent));
     font-weight: 500;
     margin-bottom: 14px;
     display: block;
+  }
+  @media (min-width: 641px){
+    .log-entry{ padding-right: 60px; }
+  }
+  .log-icon{
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: color-mix(in srgb, var(--dot, var(--accent)) 12%, white);
+  }
+  .log-icon svg{ width: 22px; height: 22px; stroke: var(--dot, var(--accent)); fill: none; stroke-width: 1.6; }
+  @media (max-width: 640px){
+    .log-icon{ display: none; }
   }
   .log-entry ul{
     list-style: none;
@@ -292,10 +498,16 @@
     transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
   }
   .tag:hover{
-    background: var(--accent-soft);
-    border-color: var(--accent);
-    color: var(--accent);
+    background: color-mix(in srgb, var(--dot, var(--accent)) 14%, white);
+    border-color: var(--dot, var(--accent));
+    color: var(--dot, var(--accent));
     transform: translateY(-1px);
+  }
+  .tag.skill-tag{ cursor: pointer; }
+  .tag.skill-tag.active{
+    background: var(--dot, var(--accent));
+    border-color: var(--dot, var(--accent));
+    color: #fff;
   }
 
   /* SKILLS */
@@ -305,6 +517,12 @@
     gap: 28px;
   }
   .skill-group .eyebrow{ margin-bottom: 12px; }
+  .skills-hint{
+    font-size: 0.85rem;
+    color: var(--muted);
+    margin-bottom: 24px;
+    margin-top: -20px;
+  }
   .skill-group .tags{ gap: 8px; }
 
   /* EDUCATION */
@@ -313,11 +531,11 @@
     border: 1px solid var(--line);
     border-radius: 6px;
     padding: 28px;
-    transition: box-shadow 0.2s ease, transform 0.2s ease;
+    transition: box-shadow 0.2s ease, transform 0.15s ease;
+    will-change: transform;
   }
   .edu-card:hover{
     box-shadow: 0 8px 24px -12px rgba(20,24,28,0.15);
-    transform: translateY(-2px);
   }
   .edu-card h3{ font-size: 1.15rem; margin-bottom: 4px; }
   .edu-card .edu-sub{
@@ -376,6 +594,20 @@
   }
   .copied-toast.show{ opacity: 1; }
 
+  .confetti-piece{
+    position: fixed;
+    width: 6px;
+    height: 6px;
+    border-radius: 2px;
+    pointer-events: none;
+    z-index: 999;
+    animation: confetti-burst 0.7s ease-out forwards;
+  }
+  @keyframes confetti-burst{
+    from{ opacity: 1; transform: translate(0,0) rotate(0deg); }
+    to{ opacity: 0; transform: translate(var(--tx), var(--ty)) rotate(var(--tr)); }
+  }
+
   ::selection{ background: var(--accent-soft); color: var(--accent); }
 
   a:focus-visible, button:focus-visible{
@@ -386,44 +618,64 @@
 </head>
 <body>
 
-<header class="nav">
+<header class="nav" id="site-nav">
   <div class="nav-inner">
     <div class="nav-logo">PD</div>
-    <nav class="nav-links">
+    <nav class="nav-links" id="nav-links">
       <a href="#work">Work</a>
       <a href="#skills">Skills</a>
       <a href="#education">Education</a>
       <a href="#contact">Contact</a>
     </nav>
+    <button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
   </div>
+  <div class="scroll-progress" id="scroll-progress"></div>
 </header>
 
 <main class="wrap">
 
-  <section class="hero" style="border-top:none;">
-    <p class="eyebrow hero-anim" style="--d:0s">B.S. COMPUTER SCIENCE, UNIVERSITY OF HOUSTON</p>
-    <h1 class="hero-anim" style="--d:0.08s">Patrick Do</h1>
-    <p class="tagline hero-anim" style="--d:0.16s">I build <strong>structured systems</strong> — backend APIs, role-based dashboards, and the data pipelines that keep them accurate. Most recently shipping analytics tooling in C# / .NET.</p>
-    <div class="cta-row hero-anim" style="--d:0.24s">
-      <a class="btn btn-primary" href="patrick-do-resume.pdf" download>↓ Download résumé</a>
-      <a class="btn btn-ghost" href="mailto:patrickphido@gmail.com" onclick="copyEmail(this)">Email me<span class="copied-toast">Copied!</span></a>
+  <section class="hero" id="hero-section" style="border-top:none;">
+    <div class="hero-blobs" id="hero-blobs">
+      <div class="blob blob-1"></div>
+      <div class="blob blob-2"></div>
+      <div class="blob blob-3"></div>
     </div>
-    <div class="social-row hero-anim" style="--d:0.32s">
-      <a href="https://www.linkedin.com/in/patrick-phi-do" target="_blank" rel="noopener">LinkedIn</a>
-      <a href="https://github.com/patrickphido/patrickphido.github.io" target="_blank" rel="noopener">GitHub</a>
-      <a href="mailto:patrickphido@gmail.com">patrickphido@gmail.com</a>
+    <div class="hero-spotlight" id="hero-spotlight"></div>
+    <div class="hero-content" id="hero-content">
+      <div class="hero-text">
+        <p class="eyebrow hero-anim" style="--d:0s">B.S. COMPUTER SCIENCE, UNIVERSITY OF HOUSTON</p>
+        <h1 class="hero-anim" style="--d:0.08s">Patrick Do</h1>
+        <p class="tagline hero-anim" style="--d:0.16s">I build <strong>structured systems</strong> — backend APIs, role-based dashboards, and the data pipelines that keep them accurate. Most recently shipping analytics tooling in C# / .NET.</p>
+        <div class="cta-row hero-anim" style="--d:0.24s">
+          <a class="btn btn-primary" href="patrick-do-resume.pdf" download>↓ Download résumé</a>
+          <a class="btn btn-ghost" href="mailto:patrickphido@gmail.com" onclick="copyEmail(this)">Email me<span class="copied-toast">Copied!</span></a>
+        </div>
+        <div class="social-row hero-anim" style="--d:0.32s">
+          <a href="https://www.linkedin.com/in/patrick-phi-do" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><path d="M20.45 20.45h-3.55v-5.57c0-1.33-.02-3.03-1.85-3.03-1.85 0-2.14 1.45-2.14 2.94v5.66H9.36V9h3.41v1.56h.05c.47-.9 1.63-1.85 3.36-1.85 3.6 0 4.27 2.37 4.27 5.45v6.29zM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12zM7.12 20.45H3.56V9h3.56v11.45z"/></svg>LinkedIn</a>
+          <a href="https://github.com/patrickphido/patrickphido.github.io" target="_blank" rel="noopener"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.58 2 12.2c0 4.5 2.87 8.32 6.84 9.67.5.1.68-.22.68-.49 0-.24-.01-.87-.01-1.71-2.78.62-3.37-1.37-3.37-1.37-.46-1.2-1.11-1.52-1.11-1.52-.91-.64.07-.63.07-.63 1 .07 1.53 1.05 1.53 1.05.89 1.56 2.34 1.11 2.91.85.09-.66.35-1.11.63-1.37-2.22-.26-4.56-1.14-4.56-5.07 0-1.12.39-2.03 1.03-2.75-.1-.26-.45-1.31.1-2.73 0 0 .84-.28 2.75 1.05a9.36 9.36 0 0 1 5 0c1.9-1.33 2.75-1.05 2.75-1.05.55 1.42.2 2.47.1 2.73.64.72 1.03 1.63 1.03 2.75 0 3.94-2.34 4.8-4.57 5.06.36.32.68.94.68 1.9 0 1.37-.01 2.47-.01 2.81 0 .27.18.6.69.49A10.02 10.02 0 0 0 22 12.2C22 6.58 17.52 2 12 2z"/></svg>GitHub</a>
+          <a href="mailto:patrickphido@gmail.com"><svg viewBox="0 0 24 24"><path d="M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zm0 4-8 5-8-5V6l8 5 8-5v2z"/></svg>patrickphido@gmail.com</a>
+        </div>
+      </div>
+      <div class="hero-photo-wrap hero-anim" style="--d:0.1s">
+        <div class="hero-photo-frame" id="hero-photo-frame">
+          <img src="patrick-photo.jpg" alt="Patrick Do">
+        </div>
+      </div>
     </div>
   </section>
 
   <section id="work">
     <div class="section-head reveal">
-      <p class="eyebrow">experience log</p>
+      <p class="eyebrow">01 — experience log</p>
       <h2>Where the code has shipped</h2>
     </div>
 
     <div class="log">
 
-      <div class="log-entry reveal">
+      <div class="log-entry reveal" style="--dot:#7C3AED">
+        <div class="log-icon"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M12 20V4M20 20v-7"/></svg></div>
         <span class="log-date">JAN 2026 — MAY 2026</span>
         <h3 class="log-title">Octane</h3>
         <span class="log-role">Performance Analytics & Dashboard Platform · Personal Project</span>
@@ -440,7 +692,8 @@
         </div>
       </div>
 
-      <div class="log-entry reveal">
+      <div class="log-entry reveal" style="--dot:#E85D3E">
+        <div class="log-icon"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h6M14 12h6M9 7l-3 5 3 5M15 7l3 5-3 5"/></svg></div>
         <span class="log-date">JAN 2025 — MAY 2025</span>
         <h3 class="log-title">Approval Workflow System</h3>
         <span class="log-role">Internal Application · University of Houston</span>
@@ -454,7 +707,8 @@
         </div>
       </div>
 
-      <div class="log-entry reveal">
+      <div class="log-entry reveal" style="--dot:#0F9488">
+        <div class="log-icon"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M4.2 7.5l2.6 1.5M17.2 15l2.6 1.5M4.2 16.5l2.6-1.5M17.2 9l2.6-1.5"/></svg></div>
         <span class="log-date">MAY 2023 — JUL 2024</span>
         <h3 class="log-title">Moore Control Systems Inc.</h3>
         <span class="log-role">IT Intern · Houston, TX</span>
@@ -474,38 +728,39 @@
 
   <section id="skills">
     <div class="section-head reveal">
-      <p class="eyebrow">stack</p>
+      <p class="eyebrow">02 — stack</p>
       <h2>Tools & languages</h2>
     </div>
+    <p class="skills-hint reveal">Click a skill to see where it shows up in the work above.</p>
     <div class="skills-grid">
-      <div class="skill-group reveal">
-        <p class="eyebrow">languages</p>
+      <div class="skill-group reveal" style="--dot:#2454A6">
+        <p class="eyebrow" style="color:#2454A6">languages</p>
         <div class="tags">
-          <span class="tag">C#</span><span class="tag">Python</span><span class="tag">JavaScript</span>
-          <span class="tag">TypeScript</span><span class="tag">SQL</span><span class="tag">C++</span>
-          <span class="tag">HTML/CSS</span><span class="tag">R</span>
+          <span class="tag skill-tag">C#</span><span class="tag skill-tag">Python</span><span class="tag skill-tag">JavaScript</span>
+          <span class="tag skill-tag">TypeScript</span><span class="tag skill-tag">SQL</span><span class="tag skill-tag">C++</span>
+          <span class="tag skill-tag">HTML/CSS</span><span class="tag skill-tag">R</span>
         </div>
       </div>
-      <div class="skill-group reveal">
-        <p class="eyebrow">fullstack</p>
+      <div class="skill-group reveal" style="--dot:#7C3AED">
+        <p class="eyebrow" style="color:#7C3AED">fullstack</p>
         <div class="tags">
-          <span class="tag">React</span><span class="tag">Next.js</span><span class="tag">.NET</span>
-          <span class="tag">Entity Framework Core</span><span class="tag">REST APIs</span>
+          <span class="tag skill-tag">React</span><span class="tag skill-tag">Next.js</span><span class="tag skill-tag">.NET</span>
+          <span class="tag skill-tag">Entity Framework Core</span><span class="tag skill-tag">REST APIs</span>
         </div>
       </div>
-      <div class="skill-group reveal">
-        <p class="eyebrow">dev tools & platforms</p>
+      <div class="skill-group reveal" style="--dot:#0F9488">
+        <p class="eyebrow" style="color:#0F9488">dev tools & platforms</p>
         <div class="tags">
-          <span class="tag">VS Code</span><span class="tag">Visual Studio</span><span class="tag">Azure</span>
-          <span class="tag">JetBrains Rider</span><span class="tag">SonarCloud</span><span class="tag">Swagger UI</span>
-          <span class="tag">NUnit</span><span class="tag">Git</span>
+          <span class="tag skill-tag">VS Code</span><span class="tag skill-tag">Visual Studio</span><span class="tag skill-tag">Azure</span>
+          <span class="tag skill-tag">JetBrains Rider</span><span class="tag skill-tag">SonarCloud</span><span class="tag skill-tag">Swagger UI</span>
+          <span class="tag skill-tag">NUnit</span><span class="tag skill-tag">Git</span>
         </div>
       </div>
-      <div class="skill-group reveal">
-        <p class="eyebrow">documentation</p>
+      <div class="skill-group reveal" style="--dot:#D69E2E">
+        <p class="eyebrow" style="color:#D69E2E">documentation</p>
         <div class="tags">
-          <span class="tag">M-Files</span><span class="tag">LaTeX</span><span class="tag">Confluence</span>
-          <span class="tag">Jira</span><span class="tag">Excel</span>
+          <span class="tag skill-tag">M-Files</span><span class="tag skill-tag">LaTeX</span><span class="tag skill-tag">Confluence</span>
+          <span class="tag skill-tag">Jira</span><span class="tag skill-tag">Excel</span>
         </div>
       </div>
     </div>
@@ -513,7 +768,7 @@
 
   <section id="education">
     <div class="section-head reveal">
-      <p class="eyebrow">background</p>
+      <p class="eyebrow">03 — background</p>
       <h2>Education</h2>
     </div>
     <div class="edu-card reveal">
@@ -527,7 +782,7 @@
   </section>
 
   <footer id="contact">
-    <p class="eyebrow reveal">get in touch</p>
+    <p class="eyebrow reveal">04 — get in touch</p>
     <h2 class="reveal">Let's build something.</h2>
     <p class="reveal">Open to new-grad software engineering roles — backend, fullstack, or systems-leaning. The fastest way to reach me is email.</p>
     <div class="cta-row reveal">
@@ -553,12 +808,172 @@
       toast.classList.add('show');
       setTimeout(function(){ toast.classList.remove('show'); }, 2000);
     }
+    burstConfetti(el);
   }
 
-  var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function burstConfetti(el){
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    var rect = el.getBoundingClientRect();
+    var cx = rect.left + rect.width / 2;
+    var cy = rect.top + rect.height / 2;
+    var colors = ['#2454A6', '#7C3AED', '#E85D3E', '#0F9488', '#D69E2E'];
+    for (var i = 0; i < 14; i++) {
+      var piece = document.createElement('span');
+      piece.className = 'confetti-piece';
+      var angle = Math.random() * Math.PI * 2;
+      var dist = 40 + Math.random() * 50;
+      piece.style.left = cx + 'px';
+      piece.style.top = cy + 'px';
+      piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+      piece.style.setProperty('--tx', Math.cos(angle) * dist + 'px');
+      piece.style.setProperty('--ty', Math.sin(angle) * dist + 'px');
+      piece.style.setProperty('--tr', (Math.random() * 360) + 'deg');
+      document.body.appendChild(piece);
+      (function(p){ setTimeout(function(){ p.remove(); }, 750); })(piece);
+    }
+  }
+
+  var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // nav shrink on scroll, scroll progress, active section highlight
+  var siteNav = document.getElementById('site-nav');
+  var progressBar = document.getElementById('scroll-progress');
+  var navAnchors = document.querySelectorAll('.nav-links a');
+  var sections = ['work', 'skills', 'education', 'contact']
+    .map(function(id){ return document.getElementById(id); })
+    .filter(Boolean);
+
+  function onScroll(){
+    if (siteNav) siteNav.classList.toggle('scrolled', window.scrollY > 8);
+
+    if (progressBar) {
+      var docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      var pct = docHeight > 0 ? (window.scrollY / docHeight) * 100 : 0;
+      progressBar.style.width = pct + '%';
+    }
+
+    var current = null;
+    sections.forEach(function(sec){
+      var rect = sec.getBoundingClientRect();
+      if (rect.top <= 140 && rect.bottom > 140) current = sec.id;
+    });
+    navAnchors.forEach(function(a){
+      a.classList.toggle('active', current && a.getAttribute('href') === '#' + current);
+    });
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+
+  // mobile nav toggle
+  var navToggle = document.getElementById('nav-toggle');
+  var navLinksEl = document.getElementById('nav-links');
+  if (navToggle && navLinksEl) {
+    navToggle.addEventListener('click', function(){
+      var isOpen = navLinksEl.classList.toggle('open');
+      navToggle.classList.toggle('open', isOpen);
+      navToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    });
+    navLinksEl.querySelectorAll('a').forEach(function(a){
+      a.addEventListener('click', function(){
+        navLinksEl.classList.remove('open');
+        navToggle.classList.remove('open');
+        navToggle.setAttribute('aria-expanded', 'false');
+      });
+    });
+  }
+
+  // hero parallax: blobs drift, content fades/scales as you scroll past
+  var heroBlobs = document.getElementById('hero-blobs');
+  var heroContent = document.getElementById('hero-content');
+  if (!reducedMotion && heroBlobs && heroContent) {
+    var ticking = false;
+    function updateHeroParallax(){
+      var y = window.scrollY;
+      var fade = Math.max(0, 1 - y / 480);
+      heroContent.style.opacity = fade;
+      heroContent.style.transform = 'translateY(' + (y * 0.25) + 'px) scale(' + (1 - Math.min(y, 400) * 0.0003) + ')';
+      heroBlobs.style.transform = 'translateY(' + (y * 0.12) + 'px)';
+      ticking = false;
+    }
+    window.addEventListener('scroll', function(){
+      if (!ticking) { requestAnimationFrame(updateHeroParallax); ticking = true; }
+    }, { passive: true });
+    updateHeroParallax();
+  }
+
+  // magnetic buttons
+  if (!reducedMotion) {
+    document.querySelectorAll('.btn').forEach(function(btn){
+      btn.addEventListener('mousemove', function(e){
+        var rect = btn.getBoundingClientRect();
+        var dx = (e.clientX - rect.left - rect.width / 2) * 0.25;
+        var dy = (e.clientY - rect.top - rect.height / 2) * 0.35;
+        btn.style.transform = 'translate(' + dx + 'px,' + dy + 'px)';
+      });
+      btn.addEventListener('mouseleave', function(){
+        btn.style.transform = 'translate(0,0)';
+      });
+    });
+  }
+
+  // 3D tilt on the education card and hero photo
+  if (!reducedMotion) {
+    document.querySelectorAll('.edu-card, .hero-photo-frame').forEach(function(card){
+      card.addEventListener('mousemove', function(e){
+        var rect = card.getBoundingClientRect();
+        var px = (e.clientX - rect.left) / rect.width - 0.5;
+        var py = (e.clientY - rect.top) / rect.height - 0.5;
+        card.style.transform = 'perspective(700px) rotateX(' + (py * -6) + 'deg) rotateY(' + (px * 6) + 'deg) translateY(-2px)';
+      });
+      card.addEventListener('mouseleave', function(){
+        card.style.transform = 'perspective(700px) rotateX(0) rotateY(0) translateY(0)';
+      });
+    });
+  }
+
+  // hero cursor spotlight
+  var heroSection = document.getElementById('hero-section');
+  var spotlight = document.getElementById('hero-spotlight');
+  if (heroSection && spotlight && !reducedMotion) {
+    heroSection.addEventListener('mousemove', function(e){
+      var rect = heroSection.getBoundingClientRect();
+      var x = ((e.clientX - rect.left) / rect.width) * 100;
+      var y = ((e.clientY - rect.top) / rect.height) * 100;
+      spotlight.style.setProperty('--mx', x + '%');
+      spotlight.style.setProperty('--my', y + '%');
+    });
+  }
+
+  // skill tag click-to-filter
+  var skillTags = document.querySelectorAll('.skill-tag');
+  var logEntries = document.querySelectorAll('.log-entry');
+  var activeSkill = null;
+  skillTags.forEach(function(tag){
+    tag.addEventListener('click', function(){
+      var text = tag.textContent.trim().toLowerCase();
+      if (activeSkill === text) {
+        activeSkill = null;
+        skillTags.forEach(function(t){ t.classList.remove('active'); });
+        logEntries.forEach(function(entry){ entry.classList.remove('dimmed', 'highlighted'); });
+        return;
+      }
+      activeSkill = text;
+      skillTags.forEach(function(t){ t.classList.remove('active'); });
+      tag.classList.add('active');
+      logEntries.forEach(function(entry){
+        var entryTags = Array.prototype.map.call(entry.querySelectorAll('.tags .tag'), function(t){
+          return t.textContent.trim().toLowerCase();
+        });
+        var match = entryTags.some(function(et){ return et.includes(text) || text.includes(et); });
+        entry.classList.toggle('highlighted', match);
+        entry.classList.toggle('dimmed', !match);
+      });
+    });
+  });
+
   var revealEls = document.querySelectorAll('.reveal');
 
-  if (prefersReduced || !('IntersectionObserver' in window)) {
+  if (reducedMotion || !('IntersectionObserver' in window)) {
     revealEls.forEach(function(el){ el.classList.add('is-visible'); });
   } else {
     var observer = new IntersectionObserver(function(entries){
